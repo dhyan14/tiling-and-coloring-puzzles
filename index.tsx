@@ -30,6 +30,20 @@ const PuzzleWrapper = ({ puzzleNumber, children }: PuzzleWrapperProps) => {
     );
 }
 
+// Add touch event utilities
+const getTouchPosition = (event: React.TouchEvent<HTMLDivElement>, gridElement: HTMLDivElement) => {
+    const touch = event.touches[0];
+    const rect = gridElement.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    const cellSize = rect.width / (gridElement.classList.contains('eight-by-eight') ? 8 : 
+                                 gridElement.classList.contains('five-by-five') ? 5 : 6);
+    return {
+        r: Math.floor(y / cellSize),
+        c: Math.floor(x / cellSize)
+    };
+};
+
 // --- Puzzle 1: Domino Tiling ---
 interface Domino {
     id: number;
@@ -90,8 +104,8 @@ const Puzzle1 = () => {
         setHistoryIndex(newHistory.length);
     };
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -136,6 +150,23 @@ const Puzzle1 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addDomino(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -252,8 +283,8 @@ const Puzzle2 = () => {
         setHistoryIndex(newHistory.length);
     };
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -285,6 +316,27 @@ const Puzzle2 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        if (!removedCells.has(`${pos.r}-${pos.c}`)) {
+                            setHoverPreview(pos);
+                        }
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        if (!removedCells.has(`${pos.r}-${pos.c}`)) {
+                            setHoverPreview(pos);
+                        }
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview && !removedCells.has(`${hoverPreview.r}-${hoverPreview.c}`)) {
+                            addDomino(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -427,8 +479,8 @@ const Puzzle3 = () => {
         setVisualRotation(prev => prev + 90);
     };
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -507,6 +559,23 @@ const Puzzle3 = () => {
                 <div 
                     className="puzzle-grid eight-by-eight"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addPiece(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(64)].map((_, i) => {
                         const r = Math.floor(i / 8);
@@ -590,8 +659,8 @@ const Puzzle4 = () => {
         setVisualRotation(prev => prev + 90);
     };
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -670,6 +739,23 @@ const Puzzle4 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addPiece(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -803,8 +889,8 @@ const Puzzle5 = () => {
         }
     };
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -902,6 +988,23 @@ const Puzzle5 = () => {
                 <div 
                     className="puzzle-grid eight-by-eight"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addPiece(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(64)].map((_, i) => {
                         const r = Math.floor(i / 8);
@@ -929,6 +1032,260 @@ const Puzzle5 = () => {
     );
 };
 
+// --- Puzzle 6: Different Tetrominoes ---
+interface TetrominoPiece {
+    type: 'I' | 'T' | 'O' | 'L' | 'Z';
+    id: number;
+    r: number;
+    c: number;
+    rotation: number;
+    color: string;
+}
+
+const getTetrominoPieceCells = (type: TetrominoPiece['type'], r: number, c: number, rotation: number): {r: number, c: number}[] => {
+    switch(type) {
+        case 'I': // Straight piece
+            if (rotation === 0 || rotation === 180) {
+                return [{r, c: c-1}, {r, c}, {r, c: c+1}, {r, c: c+2}];
+            } else {
+                return [{r: r-1, c}, {r, c}, {r: r+1, c}, {r: r+2, c}];
+            }
+        case 'T': // T piece
+            switch(rotation) {
+                case 0: // Pointing up
+                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r-1, c}];
+                case 90: // Pointing right
+                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r, c: c+1}];
+                case 180: // Pointing down
+                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r+1, c}];
+                case 270: // Pointing left
+                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r, c: c-1}];
+                default:
+                    return [];
+            }
+        case 'O': // Square piece
+            return [{r, c}, {r, c: c+1}, {r: r+1, c}, {r: r+1, c: c+1}];
+        case 'L': // L piece
+            switch(rotation) {
+                case 0:
+                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r: r+1, c: c+1}];
+                case 90:
+                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r+1, c: c-1}];
+                case 180:
+                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r: r-1, c: c-1}];
+                case 270:
+                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r-1, c: c+1}];
+                default:
+                    return [];
+            }
+        case 'Z': // Z piece (Skew)
+            if (rotation === 0 || rotation === 180) {
+                return [{r, c}, {r, c: c-1}, {r: r+1, c}, {r: r+1, c: c+1}];
+            } else {
+                return [{r, c}, {r: r-1, c}, {r: r, c: c+1}, {r: r+1, c: c+1}];
+            }
+        default:
+            return [];
+    }
+};
+
+const Puzzle6 = () => {
+    const [activePieceType, setActivePieceType] = useState<TetrominoPiece['type']>('T');
+    const [logicalRotation, setLogicalRotation] = useState(0);
+    const [visualRotation, setVisualRotation] = useState(0);
+    const [history, setHistory] = useState<TetrominoPiece[][]>([[]]);
+    const [historyIndex, setHistoryIndex] = useState(0);
+    const [hoverPreview, setHoverPreview] = useState<{ r: number; c: number } | null>(null);
+    const nextPieceId = useRef(0);
+
+    const pieces = history[historyIndex];
+
+    const { coveredCells, usedPieceTypes } = useMemo(() => {
+        const cells = new Set<string>();
+        const usedTypes = new Set<TetrominoPiece['type']>();
+        
+        pieces.forEach(piece => {
+            getTetrominoPieceCells(piece.type, piece.r, piece.c, piece.rotation).forEach(cell => {
+                cells.add(`${cell.r}-${cell.c}`);
+            });
+            usedTypes.add(piece.type);
+        });
+        
+        return { coveredCells: cells, usedPieceTypes: usedTypes };
+    }, [pieces]);
+
+    const addPiece = (r: number, c: number) => {
+        if (usedPieceTypes.has(activePieceType)) return;
+        
+        const newPieceShape = getTetrominoPieceCells(activePieceType, r, c, logicalRotation);
+        const isOutOfBounds = newPieceShape.some(cell => cell.r < 0 || cell.r > 3 || cell.c < 0 || cell.c > 4);
+        if (isOutOfBounds) return;
+
+        const isOverlapping = newPieceShape.some(cell => coveredCells.has(`${cell.r}-${cell.c}`));
+        if (isOverlapping) return;
+
+        const newPiece: TetrominoPiece = {
+            id: nextPieceId.current++,
+            type: activePieceType,
+            r, c,
+            rotation: logicalRotation,
+            color: tetrominoColors[nextPieceId.current % tetrominoColors.length],
+        };
+
+        const newPieces = [...pieces, newPiece];
+        const newHistory = history.slice(0, historyIndex + 1);
+        setHistory([...newHistory, newPieces]);
+        setHistoryIndex(newHistory.length);
+    };
+
+    const handleRotate = () => {
+        if (activePieceType === 'O') return; // Square piece doesn't rotate
+        if (activePieceType === 'I' || activePieceType === 'Z') {
+            setLogicalRotation(prev => (prev + 90) % 180);
+            setVisualRotation(prev => prev + 90);
+        } else {
+            setLogicalRotation(prev => (prev + 90) % 360);
+            setVisualRotation(prev => prev + 90);
+        }
+    };
+
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleReset = () => {
+        setHistory([[]]);
+        setHistoryIndex(0);
+        nextPieceId.current = 0;
+    };
+
+    useEffect(() => {
+        if (coveredCells.size === 20 && usedPieceTypes.size === 5) {
+            // All pieces placed successfully
+            setIsSolved(true);
+        } else {
+            setIsSolved(false);
+        }
+    }, [coveredCells.size, usedPieceTypes.size]);
+
+    const renderPieces = (pieceList: TetrominoPiece[]) => {
+        return pieceList.flatMap(p => 
+            getTetrominoPieceCells(p.type, p.r, p.c, p.rotation).map((cell, i) => (
+                <div 
+                    key={`${p.id}-${i}`}
+                    className="tetromino-block"
+                    style={{
+                        '--r': cell.r,
+                        '--c': cell.c,
+                        '--color': p.color
+                    } as React.CSSProperties}
+                ></div>
+            ))
+        );
+    };
+
+    const renderPreview = (r: number, c: number) => {
+        if (usedPieceTypes.has(activePieceType)) return null;
+        
+        const shape = getTetrominoPieceCells(activePieceType, r, c, logicalRotation);
+        const isOutOfBounds = shape.some(cell => cell.r < 0 || cell.r > 3 || cell.c < 0 || cell.c > 4);
+        if (isOutOfBounds) return null;
+
+        const isOverlapping = shape.some(cell => coveredCells.has(`${cell.r}-${cell.c}`));
+        if (isOverlapping) return null;
+        
+        return shape.map((cell, i) => (
+            <div 
+                key={`preview-${i}`}
+                className="tetromino-block-preview"
+                style={{
+                    '--r': cell.r,
+                    '--c': cell.c
+                } as React.CSSProperties}
+            ></div>
+        ));
+    };
+
+    return (
+        <PuzzleWrapper puzzleNumber={6}>
+            <p>Place different Tetromino pieces (Straight, T, Square, L, and Skew) on a 4x5 grid. Each piece can only be used once.</p>
+            <div className="puzzle-controls tetromino-controls">
+                {(['I', 'T', 'O', 'L', 'Z'] as const).map(type => (
+                    <button
+                        key={type}
+                        onClick={() => {
+                            setActivePieceType(type);
+                            setLogicalRotation(0);
+                            setVisualRotation(0);
+                        }}
+                        disabled={usedPieceTypes.has(type)}
+                        aria-label={`Select ${type} tetromino`}
+                        className={`tetromino-button ${activePieceType === type ? 'active-piece-control' : ''}`}
+                        style={activePieceType === type ? { transform: `rotate(${visualRotation}deg)` } : undefined}
+                    >
+                        <div className="tetromino-outline">
+                            <svg viewBox="0 0 84 84" preserveAspectRatio="none">
+                                <path d={
+                                    type === 'I' ? "M 4,0 H 80 A 4 4 0 0 1 84,4 V 20 A 4 4 0 0 1 80,24 H 4 A 4 4 0 0 1 0,20 V 4 A 4 4 0 0 1 4,0 Z" :
+                                    type === 'T' ? "M 26,6 A 6 6 0 0 1 32,0 H 52 A 6 6 0 0 1 58,6 V 26 H 78 A 6 6 0 0 1 84,32 V 52 A 6 6 0 0 1 78,58 H 6 A 6 6 0 0 1 0,52 V 32 A 6 6 0 0 1 6,26 H 26 V 6 Z" :
+                                    type === 'O' ? "M 4,0 H 80 A 4 4 0 0 1 84,4 V 80 A 4 4 0 0 1 80,84 H 4 A 4 4 0 0 1 0,80 V 4 A 4 4 0 0 1 4,0 Z" :
+                                    type === 'L' ? "M 4,0 H 20 A 4 4 0 0 1 24,4 V 60 H 80 A 4 4 0 0 1 84,64 V 80 A 4 4 0 0 1 80,84 H 4 A 4 4 0 0 1 0,80 V 4 A 4 4 0 0 1 4,0 Z" :
+                                    "M 24,0 H 40 A 4 4 0 0 1 44,4 V 40 H 80 A 4 4 0 0 1 84,44 V 60 A 4 4 0 0 1 80,64 H 44 V 80 A 4 4 0 0 1 40,84 H 24 A 4 4 0 0 1 20,80 V 64 H 4 A 4 4 0 0 1 0,60 V 44 A 4 4 0 0 1 4,40 H 20 V 4 A 4 4 0 0 1 24,0 Z"
+                                } />
+                            </svg>
+                        </div>
+                    </button>
+                ))}
+            </div>
+            <div className="puzzle-grid-container">
+                <div 
+                    className="puzzle-grid four-by-five"
+                    onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addPiece(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
+                >
+                    {[...Array(20)].map((_, i) => {
+                        const r = Math.floor(i / 5);
+                        const c = i % 5;
+                        return (
+                            <div 
+                                key={i} 
+                                className="grid-cell" 
+                                onClick={() => addPiece(r, c)}
+                                onMouseEnter={() => setHoverPreview({ r, c })}
+                            ></div>
+                        );
+                    })}
+                    {renderPieces(pieces)}
+                    {hoverPreview && renderPreview(hoverPreview.r, hoverPreview.c)}
+                </div>
+            </div>
+            <div className="puzzle-actions">
+                <button onClick={handleUndo} disabled={historyIndex === 0}>Undo</button>
+                <button onClick={handleRedo} disabled={historyIndex === history.length - 1}>Redo</button>
+                <button onClick={handleReset}>Reset</button>
+                <button onClick={handleRotate} disabled={activePieceType === 'O'}>Rotate</button>
+            </div>
+            <div className={`solution-area ${!isSolved ? 'hidden' : ''}`}>
+                <p>Congratulations! You've solved Puzzle 6!</p>
+                <p>You can now attempt to unlock the next puzzle.</p>
+            </div>
+        </PuzzleWrapper>
+    );
+};
 
 // --- Puzzle 7: Straight Triominoes and a Square ---
 interface TriominoBlock {
@@ -1041,8 +1398,8 @@ const Puzzle7 = () => {
         setActivePieceType('square');
     }
 
-    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -1137,6 +1494,23 @@ const Puzzle7 = () => {
                 <div 
                     className="puzzle-grid five-by-five"
                     onMouseLeave={() => setHoverPreview(null)}
+                    onTouchStart={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchMove={(e) => {
+                        const gridElement = e.currentTarget;
+                        const pos = getTouchPosition(e, gridElement);
+                        setHoverPreview(pos);
+                    }}
+                    onTouchEnd={(e) => {
+                        e.preventDefault();
+                        if (hoverPreview) {
+                            addPiece(hoverPreview.r, hoverPreview.c);
+                        }
+                        setHoverPreview(null);
+                    }}
                 >
                     {[...Array(25)].map((_, i) => {
                         const r = Math.floor(i / 5);
@@ -1163,7 +1537,6 @@ const Puzzle7 = () => {
         </PuzzleWrapper>
     );
 };
-
 
 // --- Fallback Puzzle Placeholder ---
 interface PuzzlePlaceholderProps {
@@ -1316,6 +1689,8 @@ const App = () => {
                 return <Puzzle4 />;
             case 5:
                 return <Puzzle5 />;
+            case 6:
+                return <Puzzle6 />;
             case 7:
                 return <Puzzle7 />;
             default:
