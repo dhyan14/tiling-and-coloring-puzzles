@@ -1095,6 +1095,7 @@ const Puzzle6 = () => {
     const [visualRotation, setVisualRotation] = useState(0);
     const [history, setHistory] = useState<TetrominoPiece[][]>([[]]);
     const [historyIndex, setHistoryIndex] = useState(0);
+    const [isSolved, setIsSolved] = useState(false);
     const [hoverPreview, setHoverPreview] = useState<{ r: number; c: number } | null>(null);
     const nextPieceId = useRef(0);
 
@@ -1154,6 +1155,7 @@ const Puzzle6 = () => {
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
+        setIsSolved(false);
         nextPieceId.current = 0;
     };
 
