@@ -14,6 +14,8 @@ body {
     align-items: center;
     min-height: 100vh;
     text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 #root {
@@ -67,6 +69,86 @@ nav button.locked::after {
     font-size: 0.8rem;
 }
 
+/* Mobile-specific styles */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+
+    #root {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .puzzle-container {
+        padding: 0.8rem;
+    }
+
+    .puzzle-grid-container {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    nav button {
+        min-width: 36px;
+        height: 36px;
+        padding: 0;
+        font-size: 0.9rem;
+    }
+
+    .puzzle-controls {
+        gap: 8px;
+    }
+
+    .puzzle-actions {
+        gap: 8px;
+    }
+
+    .puzzle-actions button {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+
+    .password-inputs {
+        gap: 8px;
+    }
+
+    .password-inputs input {
+        width: 32px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+
+    .puzzle-content p {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+}
+
+/* Touch-specific improvements */
+@media (hover: none) {
+    .grid-cell {
+        min-width: 24px;
+        min-height: 24px;
+    }
+
+    .puzzle-controls button {
+        min-height: 44px;
+    }
+
+    .puzzle-actions button {
+        min-height: 44px;
+    }
+}
 
 /* Puzzle Container */
 .puzzle-container {
