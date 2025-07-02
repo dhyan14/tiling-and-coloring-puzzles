@@ -30,20 +30,6 @@ const PuzzleWrapper = ({ puzzleNumber, children }: PuzzleWrapperProps) => {
     );
 }
 
-// Add touch event utilities
-const getTouchPosition = (event: React.TouchEvent<HTMLDivElement>, gridElement: HTMLDivElement) => {
-    const touch = event.touches[0];
-    const rect = gridElement.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-    const cellSize = rect.width / (gridElement.classList.contains('eight-by-eight') ? 8 : 
-                                 gridElement.classList.contains('five-by-five') ? 5 : 6);
-    return {
-        r: Math.floor(y / cellSize),
-        c: Math.floor(x / cellSize)
-    };
-};
-
 // --- Puzzle 1: Domino Tiling ---
 interface Domino {
     id: number;
@@ -104,8 +90,8 @@ const Puzzle1 = () => {
         setHistoryIndex(newHistory.length);
     };
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -150,23 +136,6 @@ const Puzzle1 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview) {
-                            addDomino(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -283,8 +252,8 @@ const Puzzle2 = () => {
         setHistoryIndex(newHistory.length);
     };
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -316,27 +285,6 @@ const Puzzle2 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        if (!removedCells.has(`${pos.r}-${pos.c}`)) {
-                            setHoverPreview(pos);
-                        }
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        if (!removedCells.has(`${pos.r}-${pos.c}`)) {
-                            setHoverPreview(pos);
-                        }
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview && !removedCells.has(`${hoverPreview.r}-${hoverPreview.c}`)) {
-                            addDomino(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -479,8 +427,8 @@ const Puzzle3 = () => {
         setVisualRotation(prev => prev + 90);
     };
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -559,23 +507,6 @@ const Puzzle3 = () => {
                 <div 
                     className="puzzle-grid eight-by-eight"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview) {
-                            addPiece(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(64)].map((_, i) => {
                         const r = Math.floor(i / 8);
@@ -659,8 +590,8 @@ const Puzzle4 = () => {
         setVisualRotation(prev => prev + 90);
     };
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -739,23 +670,6 @@ const Puzzle4 = () => {
                 <div 
                     className="puzzle-grid six-by-six"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview) {
-                            addPiece(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(36)].map((_, i) => {
                         const r = Math.floor(i / 6);
@@ -889,8 +803,8 @@ const Puzzle5 = () => {
         }
     };
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -988,23 +902,6 @@ const Puzzle5 = () => {
                 <div 
                     className="puzzle-grid eight-by-eight"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview) {
-                            addPiece(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(64)].map((_, i) => {
                         const r = Math.floor(i / 8);
@@ -1144,8 +1041,8 @@ const Puzzle7 = () => {
         setActivePieceType('square');
     }
 
-    const handleUndo = () => setHistoryIndex((prev: number) => Math.max(0, prev - 1));
-    const handleRedo = () => setHistoryIndex((prev: number) => Math.min(history.length - 1, prev + 1));
+    const handleUndo = () => setHistoryIndex(prev => Math.max(0, prev - 1));
+    const handleRedo = () => setHistoryIndex(prev => Math.min(history.length - 1, prev + 1));
     const handleReset = () => {
         setHistory([[]]);
         setHistoryIndex(0);
@@ -1240,23 +1137,6 @@ const Puzzle7 = () => {
                 <div 
                     className="puzzle-grid five-by-five"
                     onMouseLeave={() => setHoverPreview(null)}
-                    onTouchStart={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchMove={(e) => {
-                        const gridElement = e.currentTarget;
-                        const pos = getTouchPosition(e, gridElement);
-                        setHoverPreview(pos);
-                    }}
-                    onTouchEnd={(e) => {
-                        e.preventDefault();
-                        if (hoverPreview) {
-                            addPiece(hoverPreview.r, hoverPreview.c);
-                        }
-                        setHoverPreview(null);
-                    }}
                 >
                     {[...Array(25)].map((_, i) => {
                         const r = Math.floor(i / 5);
