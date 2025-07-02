@@ -1046,9 +1046,9 @@ const getTetrominoPieceCells = (type: TetrominoPiece['type'], r: number, c: numb
     switch(type) {
         case 'I': // Straight piece
             if (rotation === 0 || rotation === 180) {
-                return [{r, c: c-1}, {r, c}, {r, c: c+1}, {r, c: c+2}];
+                return [{r, c: c-2}, {r, c: c-1}, {r, c}, {r, c: c+1}];
             } else {
-                return [{r: r-1, c}, {r, c}, {r: r+1, c}, {r: r+2, c}];
+                return [{r: r-2, c}, {r: r-1, c}, {r, c}, {r: r+1, c}];
             }
         case 'T': // T piece
             switch(rotation) {
@@ -1067,14 +1067,14 @@ const getTetrominoPieceCells = (type: TetrominoPiece['type'], r: number, c: numb
             return [{r, c}, {r, c: c+1}, {r: r+1, c}, {r: r+1, c: c+1}];
         case 'L': // L piece
             switch(rotation) {
-                case 0:
-                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r: r+1, c: c+1}];
-                case 90:
-                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r+1, c: c-1}];
-                case 180:
-                    return [{r, c}, {r: r-1, c}, {r: r+1, c}, {r: r-1, c: c-1}];
-                case 270:
-                    return [{r, c}, {r, c: c-1}, {r, c: c+1}, {r: r-1, c: c+1}];
+                case 0: // ┗
+                    return [{r, c}, {r: r-1, c}, {r: r-2, c}, {r, c: c+1}];
+                case 90: // ┏
+                    return [{r, c}, {r, c: c+1}, {r, c: c+2}, {r: r+1, c}];
+                case 180: // ┛
+                    return [{r, c}, {r: r+1, c}, {r: r+2, c}, {r, c: c-1}];
+                case 270: // ┓
+                    return [{r, c}, {r, c: c-1}, {r, c: c-2}, {r: r-1, c}];
                 default:
                     return [];
             }
@@ -1082,7 +1082,7 @@ const getTetrominoPieceCells = (type: TetrominoPiece['type'], r: number, c: numb
             if (rotation === 0 || rotation === 180) {
                 return [{r, c}, {r, c: c-1}, {r: r+1, c}, {r: r+1, c: c+1}];
             } else {
-                return [{r, c}, {r: r-1, c}, {r: r, c: c+1}, {r: r+1, c: c+1}];
+                return [{r, c}, {r: r-1, c}, {r, c: c+1}, {r: r+1, c: c+1}];
             }
         default:
             return [];
@@ -1116,9 +1116,11 @@ const Puzzle6 = () => {
     }, [pieces]);
 
     const addPiece = (r: number, c: number) => {
-        if (usedPieceTypes.has(activePieceType)) return;
+        if (isSolved || usedPieceTypes.has(activePieceType)) return;
         
         const newPieceShape = getTetrominoPieceCells(activePieceType, r, c, logicalRotation);
+        if (!newPieceShape || newPieceShape.length === 0) return;
+        
         const isOutOfBounds = newPieceShape.some(cell => cell.r < 0 || cell.r > 3 || cell.c < 0 || cell.c > 4);
         if (isOutOfBounds) return;
 
@@ -1142,11 +1144,13 @@ const Puzzle6 = () => {
     const handleRotate = () => {
         if (activePieceType === 'O') return; // Square piece doesn't rotate
         if (activePieceType === 'I' || activePieceType === 'Z') {
-            setLogicalRotation(prev => (prev + 90) % 180);
-            setVisualRotation(prev => prev + 90);
+            const newRotation = (logicalRotation + 90) % 180;
+            setLogicalRotation(newRotation);
+            setVisualRotation(newRotation);
         } else {
-            setLogicalRotation(prev => (prev + 90) % 360);
-            setVisualRotation(prev => prev + 90);
+            const newRotation = (logicalRotation + 90) % 360;
+            setLogicalRotation(newRotation);
+            setVisualRotation(newRotation);
         }
     };
 
@@ -1160,13 +1164,19 @@ const Puzzle6 = () => {
     };
 
     useEffect(() => {
-        if (coveredCells.size === 20 && usedPieceTypes.size === 5) {
-            // All pieces placed successfully
+        const allPiecesUsed = usedPieceTypes.size === 5;
+        const allCellsCovered = coveredCells.size === 20;
+        const validPlacement = pieces.every(piece => {
+            const shape = getTetrominoPieceCells(piece.type, piece.r, piece.c, piece.rotation);
+            return shape && shape.length > 0 && !shape.some(cell => cell.r < 0 || cell.r > 3 || cell.c < 0 || cell.c > 4);
+        });
+        
+        if (allPiecesUsed && allCellsCovered && validPlacement) {
             setIsSolved(true);
         } else {
             setIsSolved(false);
         }
-    }, [coveredCells.size, usedPieceTypes.size]);
+    }, [coveredCells.size, usedPieceTypes.size, pieces]);
 
     const renderPieces = (pieceList: TetrominoPiece[]) => {
         return pieceList.flatMap(p => 
