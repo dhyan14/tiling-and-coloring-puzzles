@@ -1,0 +1,593 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+
+/* General styling */
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+#root {
+    width: 100%;
+    max-width: 600px; /* Scaled down from 720px */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00bcd4;
+    text-shadow: 0 0 10px #00bcd4;
+    margin-bottom: 1.2rem; /* Scaled down */
+    font-size: 2rem; /* Scaled down */
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 1.5rem; /* Scaled down */
+}
+
+nav button {
+    font-family: 'Orbitron', sans-serif;
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    padding: 6px 10px; /* Scaled down */
+    font-size: 0.8rem; /* Scaled down */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    position: relative;
+}
+
+nav button.active {
+    background-color: #00bcd4;
+    color: #121212;
+    border-color: #00bcd4;
+    box-shadow: 0 0 10px #00bcd4;
+}
+
+nav button.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.8rem;
+}
+
+
+/* Puzzle Container */
+.puzzle-container {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1.2rem; /* Scaled down */
+    min-height: 350px; /* Scaled down */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+/* Lock Screen */
+.lock-screen h2 {
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.password-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.password-inputs input {
+    width: 40px; /* Scaled down */
+    height: 50px; /* Scaled down */
+    font-size: 1.6rem; /* Scaled down */
+    text-align: center;
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    border-radius: 5px;
+    caret-color: #00bcd4;
+    transition: all 0.2s ease;
+}
+
+.password-inputs input:focus {
+    outline: none;
+    border-color: #00bcd4;
+    box-shadow: 0 0 10px #00bcd4;
+}
+
+.unlock-button {
+    font-family: 'Orbitron', sans-serif;
+    background-color: #008c9e;
+    color: #fff;
+    border: none;
+    padding: 10px 20px; /* Scaled down */
+    font-size: 1rem; /* Scaled down */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.unlock-button:hover:not(:disabled) {
+    background-color: #00bcd4;
+}
+
+.unlock-button:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #ff5252;
+    margin-top: 1rem;
+    height: 1.2em;
+}
+
+/* Puzzle Content */
+.puzzle-content h2 {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.puzzle-content p {
+    margin-bottom: 1rem;
+    max-width: 450px; /* Scaled down */
+}
+
+.solution-area {
+    margin-top: 1.5rem; /* Scaled down */
+    padding: 1rem;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    border: 1px dashed #444;
+    opacity: 1;
+    transition: opacity 0.5s ease, all 0.5s ease;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.solution-area.hidden {
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+    margin-top: 0;
+    border: none;
+}
+
+.solution-area p {
+    margin: 0.5rem 0;
+}
+.solution-area code {
+    font-size: 1.3rem; /* Scaled down */
+    color: #4caf50;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+/* Puzzle Controls */
+.puzzle-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    height: 90px; /* prevent layout shift on rotation */
+    gap: 15px;
+}
+
+.puzzle-controls button {
+    background-color: transparent;
+    border: 2px solid #00bcd4;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.7);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.puzzle-controls button.domino-control-button {
+    width: 60px;
+    height: 34px;
+}
+
+.tetromino-controls button {
+    width: 82px;
+    height: 56px;
+    position: relative; /* For outline positioning */
+    border: none; /* Override default button border */
+    box-shadow: none; /* Override default button shadow */
+}
+
+.tetromino-controls button.square-control-button {
+    width: 56px;
+    height: 56px;
+    border: none;
+    box-shadow: none;
+}
+
+/* --- Active/Inactive Piece Indicator for Puzzle 5 --- */
+/* When any piece control is active, the parts of the inactive piece(s) become outlines.
+   We use an inset shadow to avoid affecting the layout box size. */
+.tetromino-controls:has(.active-piece-control) button:not(.active-piece-control) .tetromino-icon-part,
+.tetromino-controls:has(.active-piece-control) button:not(.active-piece-control) .square-icon-part {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 2px #00bcd4;
+}
+
+/* The parts of the active piece are filled and have no shadow. */
+.tetromino-controls button.active-piece-control .tetromino-icon-part,
+.tetromino-controls button.active-piece-control .square-icon-part {
+    background-color: #00bcd4;
+    box-shadow: none;
+}
+/* --- End New Active Piece Indicator --- */
+
+.puzzle-controls button:hover:not(:disabled) {
+    background-color: rgba(0, 188, 212, 0.15);
+}
+
+.tetromino-controls button:hover:not(:disabled) {
+    background-color: transparent;
+}
+
+.puzzle-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.domino-icon {
+    display: flex;
+    gap: 4px;
+    flex-direction: row;
+    width: 48px;
+    height: 22px;
+}
+
+.domino-icon-part {
+    flex-grow: 1;
+    background-color: #00bcd4;
+    border-radius: 3px;
+}
+
+.tetromino-outline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.tetromino-outline svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.tetromino-outline path {
+    fill: none;
+    stroke: #00bcd4;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(0, 188, 212, 0.7));
+    transition: all 0.3s ease;
+}
+
+.tetromino-controls button:hover:not(:disabled) .tetromino-outline path {
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 6px rgba(0, 188, 212, 1));
+    fill: rgba(0, 188, 212, 0.15);
+}
+
+.tetromino-icon {
+    display: grid;
+    grid-template-columns: repeat(3, 22px);
+    grid-template-rows: repeat(2, 22px);
+    gap: 4px;
+    position: relative; /* Place above outline */
+    z-index: 1;
+}
+
+.tetromino-icon-part {
+    background-color: #00bcd4;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tetromino-icon > div:nth-child(1) { grid-area: 1 / 2; }
+.tetromino-icon > div:nth-child(2) { grid-area: 2 / 1; }
+.tetromino-icon > div:nth-child(3) { grid-area: 2 / 2; }
+.tetromino-icon > div:nth-child(4) { grid-area: 2 / 3; }
+
+
+.square-icon {
+    display: grid;
+    grid-template-columns: repeat(2, 22px);
+    grid-template-rows: repeat(2, 22px);
+    gap: 4px;
+    width: 48px;
+    height: 48px;
+    position: relative;
+    z-index: 1;
+}
+
+.square-icon-part {
+    background-color: #00bcd4;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* PUZZLE 7 CONTROLS */
+.puzzle7-controls {
+    gap: 40px; /* Increased spacing */
+}
+
+/* Base button style reset for Puzzle 7 */
+.puzzle7-controls button {
+    position: relative;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* transition for rotation */
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.puzzle7-controls button.triomino-control {
+    width: 38px;
+    height: 94px;
+}
+
+.puzzle7-controls button.square-tile-control {
+    width: 38px;
+    height: 38px;
+}
+
+.puzzle7-controls .triomino-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+    width: 24px;
+    height: 80px;
+}
+
+.puzzle7-controls .square-tile-icon {
+    position: relative;
+    z-index: 1;
+    width: 24px;
+    height: 24px;
+}
+
+.puzzle7-controls .triomino-icon-part {
+    width: 100%;
+    height: 24px;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.puzzle7-controls .square-tile-icon-part {
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Active/Inactive State Styling for Puzzle 7, consistent with Puzzle 5 */
+.puzzle7-controls:has(.active-piece-control) button:not(.active-piece-control) .triomino-icon-part,
+.puzzle7-controls:has(.active-piece-control) button:not(.active-piece-control) .square-tile-icon-part {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 2px #00bcd4; /* Outline style */
+}
+
+.puzzle7-controls button.active-piece-control .triomino-icon-part,
+.puzzle7-controls button.active-piece-control .square-tile-icon-part {
+    background-color: #00bcd4; /* Fill style for active */
+    box-shadow: none;
+}
+
+/* Inherit the SVG outline styling for puzzle 7 button hovers */
+.puzzle7-controls button:hover:not(:disabled) .tetromino-outline path {
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 6px rgba(0, 188, 212, 1));
+    fill: rgba(0, 188, 212, 0.15);
+}
+/* END PUZZLE 7 CONTROLS */
+
+.puzzle-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 1.2rem; /* Scaled down */
+}
+
+.puzzle-actions button {
+    font-family: 'Orbitron', sans-serif;
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    padding: 8px 12px; /* Scaled down */
+    font-size: 0.8rem; /* Scaled down */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.puzzle-actions button:hover:not(:disabled) {
+    background-color: #555;
+}
+
+.puzzle-actions button:disabled {
+    background-color: #222;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.puzzle-actions .reveal-button {
+    background-color: #008c9e;
+    color: #fff;
+    border-color: #008c9e;
+}
+.puzzle-actions .reveal-button:hover:not(:disabled) {
+    background-color: #00bcd4;
+}
+
+.puzzle-grid-container {
+    width: 100%;
+    max-width: 300px; /* Scaled down */
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+}
+
+.puzzle-grid {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    
+    --grid-gap: 4px;
+    gap: var(--grid-gap);
+    background-color: #4a4a4a; /* Grout color */
+    padding: var(--grid-gap);
+    box-sizing: border-box;
+}
+
+.puzzle-grid.six-by-six {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    --cell-size: calc((100% - 7 * var(--grid-gap)) / 6);
+    --cell-and-gap: calc(var(--cell-size) + var(--grid-gap));
+}
+
+.puzzle-grid.eight-by-eight {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    --cell-size: calc((100% - 9 * var(--grid-gap)) / 8);
+    --cell-and-gap: calc(var(--cell-size) + var(--grid-gap));
+}
+
+.puzzle-grid.five-by-five {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    --cell-size: calc((100% - 6 * var(--grid-gap)) / 5);
+    --cell-and-gap: calc(var(--cell-size) + var(--grid-gap));
+}
+
+.grid-cell {
+    background-color: #303030;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+    cursor: pointer;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.grid-cell.removed {
+    background-color: #1e1e1e;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.grid-cell.no-drop {
+    cursor: not-allowed;
+}
+
+.grid-cell.center-no-drop {
+    cursor: not-allowed;
+    background-color: #4d3131;
+}
+
+.domino, .domino-preview, .tetromino-block, .tetromino-block-preview {
+    position: absolute;
+    box-sizing: border-box;
+    z-index: 2;
+    pointer-events: none;
+    
+    top: calc(var(--r) * var(--cell-and-gap) + var(--grid-gap));
+    left: calc(var(--c) * var(--cell-and-gap) + var(--grid-gap));
+}
+
+.domino, .domino-preview {
+    display: flex;
+}
+
+.domino.horizontal, .domino-preview.horizontal {
+    width: calc(2 * var(--cell-size) + var(--grid-gap));
+    height: var(--cell-size);
+    flex-direction: row;
+    gap: var(--grid-gap);
+}
+
+.domino.vertical, .domino-preview.vertical {
+    width: var(--cell-size);
+    height: calc(2 * var(--cell-size) + var(--grid-gap));
+    flex-direction: column;
+    gap: var(--grid-gap);
+}
+
+.domino-part {
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(145deg, color-mix(in srgb, var(--color) 95%, #fff 5%), color-mix(in srgb, var(--color) 90%, #000 10%));
+    border-radius: 4px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+    border-top: 1px solid color-mix(in srgb, var(--color) 100%, #fff 15%);
+}
+
+.domino-part-preview {
+    width: 100%;
+    height: 100%;
+    --preview-color: #00bcd4;
+    background-color: var(--preview-color);
+    border-radius: 4px;
+    opacity: 0.5;
+}
+
+.tetromino-block, .tetromino-block-preview {
+    width: var(--cell-size);
+    height: var(--cell-size);
+}
+
+.tetromino-block {
+    background-image: linear-gradient(145deg, color-mix(in srgb, var(--color) 95%, #fff 5%), color-mix(in srgb, var(--color) 90%, #000 10%));
+    border-radius: 4px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+    border-top: 1px solid color-mix(in srgb, var(--color) 100%, #fff 15%);
+}
+
+.tetromino-block.square-block {
+    opacity: 0.8;
+}
+
+.tetromino-block-preview {
+    --preview-color: #00bcd4;
+    background-color: var(--preview-color);
+    border-radius: 4px;
+    opacity: 0.5;
+}
